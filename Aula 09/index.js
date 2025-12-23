@@ -1,6 +1,7 @@
-import  Sequelize  from "sequelize";
 import express from 'express';
 import {engine} from 'express-handlebars';
+import Post from '../models/Post.js';
+import bodyParser from "body-parser";
 const app = express();
 
 //config
@@ -12,19 +13,32 @@ const app = express();
 
         app.set('view engine', 'handlebars')
 
-    //Conexão com banco de dados MySql
-    const sequelize = new Sequelize('test', 'matheusdev', '260910@cabralcodes', {   host: "localhost",
-    dialect: 'mysql'
-    } );
+        //body Parser
+        app.use(bodyParser.urlencoded({extended: false}))
+        app.use(bodyParser.json())
 
 //Rotas
+
+app.get('/', function(req, res){
+    Post.findAll().then(function(posts){
+    res.render('home', 
+        {posts: posts})
+    });
+})
 
 app.get('/cadastro', function(req, res){
     res.render('formulario')
 })
 
 app.post('/adicionado', function(req, res){
-    res.send('RECEBIDO!')
+    Post.create({
+        titulo: req.body.titulo,
+        conteudo: req.body.conteudo
+    }).then(function(){
+        res.redirect('/')
+    }).catch(function(erro){
+        res.send("Houve um erro "+ erro)
+    })
 })
 
 app.listen(49823, function(){
