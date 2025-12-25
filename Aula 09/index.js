@@ -20,7 +20,7 @@ const app = express();
 //Rotas
 
 app.get('/', function(req, res){
-    Post.findAll().then(function(posts){
+    Post.findAll({raw: true, order:[['id', 'DESC']]}).then(function(posts){
     res.render('home', 
         {posts: posts})
     });
